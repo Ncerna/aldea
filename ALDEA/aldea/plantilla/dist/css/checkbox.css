@@ -1,0 +1,206 @@
+   #Titulo_Center h3, h4, h5 {
+       margin: auto;
+   }
+   .box-title {
+       text-align: center;
+   }
+   #Titulo_Center h5 {
+       margin: auto;
+   }
+   .box-title {
+       text-align: center;
+   }
+   .opcion-radio input[type=radio] {
+       position: absolute;
+       opacity: 0;
+   }
+   .titulosclass {
+       display: flex;
+       justify-content: end;
+   }
+   .grup_buttons {
+       border-radius: 5px;
+       height: 40px;
+   }
+   .alin_global {
+       display: flex;
+       /* justify-content: end;*/
+   }
+   #but_alin_global {
+       border-radius: 5px;
+       /* margin-top: -2px;*/
+       /*font-size: 10px;*/
+       background-color: #05ccc4;
+       color: #fff;
+       border: aliceblue;
+   }
+   .nav-tabs-custom {
+       background-color: #6b7272 !important;
+       border-top-right-radius: 10px;
+       border-top-left-radius: 10px;
+   }
+   /* Color de notas*/
+
+   #id_aprob {
+       /* Internet Explorer 10-11 */
+       color: blue;
+   }
+   #id_desap {
+       /* Internet Explorer 10-11 */
+       color: red;
+   }
+   #tbl-reporNota {
+       border: 1px solid #d4f4f7;
+       border-radius: 10px;
+       background-color: #f5f7f7;
+   }
+   #table_alumno {
+       border: 1px solid #d4f4f7;
+       border-radius: 10px;
+       background-color: #f5f7f7;
+   }
+   /* Basic styling */
+
+   [type=checkbox] {
+       width: 1.7rem;
+       height: 1.7rem;
+       -webkit-appearance: button;
+       cursor: pointer;
+   }
+   [type=checkbox]:checked {
+       background-color: #05ccc4;
+       border: 8px solid #ddddd6;
+   }
+   [type=checkbox]:disabled {
+       background-color: #CCD3D8;
+       opacity: 0.84;
+       cursor: not-allowed;
+   }
+   /*fin*/
+
+   #Alertas {
+       border-radius: 5px;
+       position: relative;
+   }
+   button.dt-button {
+       margin-right: 0.00em;
+       border: 1px solid #25bbc9;
+       border-radius: 5px;
+   }
+   @media (max-width: 640px) {
+       button.dt-button {
+           font-size: 10px;
+           margin-right: 0.00em;
+           border: 1px solid #25bbc9;
+           border-radius: 5px;
+       }
+       .dt-buttons {
+           width: 100% !important;
+       }
+       .but_New button {
+           font-size: 10px;
+           width: 100% !important;
+       }
+       /*Contenido de cursos horarios*/
+       #id_container_curso {
+           font-size: 10px;
+           color: #ffff;
+       }
+   }
+   /*checkbox asistencia*/
+
+   .switch_checbok {
+       /*position: relative;
+       display: inline-block;
+       width: 55px;
+       height: 29px;*/
+       position: relative;
+       width: 55px;
+   }
+   .switch_checbok input {
+       opacity: 0;
+       width: 0;
+       height: 0;
+   }
+   .siderasis {
+       position: absolute;
+       cursor: pointer;
+       top: 0;
+       left: 0;
+       right: 0;
+       bottom: 0;
+       background-color: #ccc;
+       -webkit-transition: .4s;
+       transition: .4s;
+   }
+   .siderasis:before {
+       position: absolute;
+       content: "";
+       height: 18px;
+       width: 18px;
+       left: 4px;
+       bottom: 4px;
+       background-color: white;
+       -webkit-transition: .4s;
+       transition: .4s;
+   }
+   input:checked+.siderasis {
+       background-color: #05ccc4;
+   }
+   input:focus+.siderasis {
+       box-shadow: 0 0 1px #05ccc4;
+   }
+   input:checked+.siderasis:before {
+       -webkit-transform: translateX(26px);
+       -ms-transform: translateX(26px);
+       transform: translateX(26px);
+   }
+   .siderasis.round {
+       border-radius: 34px;
+       height: 25px;
+   }
+   .siderasis.round:before {
+       border-radius: 50%;
+   }
+   /*MENSAJES DE TOARD TRADICIONAL*/
+
+   #toasts {
+       position: fixed;
+       bottom: 100px;
+       right: 15px;
+       display: flex;
+       flex-direction: column;
+       align-items: flex-end;
+   }
+   .toast {
+       background-color: #fff;
+       border-radius: 5px;
+       padding: 1rem 2rem;
+       margin: 0.5rem;
+   }
+   .toast.info {
+       background-color: #3e1037;
+       color: #ffff;
+   }
+   .toast.success {
+       color: #ffff;
+       background-color: #05ccc4;
+   }
+   .toast.error {
+       color: #721c24;
+       background-color: #f8d7da;
+   }
+   .toast.warnig {
+       background-color: #05ccc4;
+       color: #f9f9f9;
+       border-style: solid;
+       /* border-color: #807b85;*/
+   }
+   /*boton de registrar notas*/
+
+   .external-even {
+       border: none;
+       border-radius: 5px;
+       color: white;
+       background-color: #05ccc4;
+   }

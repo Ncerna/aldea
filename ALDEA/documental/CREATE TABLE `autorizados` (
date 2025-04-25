@@ -1,0 +1,17 @@
+CREATE TABLE `autorizados` (
+    `idAutorizado` INT(11) NOT NULL AUTO_INCREMENT,
+    `nombre_autorizado1` VARCHAR(45) DEFAULT NULL,
+    `apellido_autorizado1` VARCHAR(45) DEFAULT NULL,
+    `parentesco_autorizado1` VARCHAR(45) DEFAULT NULL,
+    `nombre_autorizado2` VARCHAR(45) DEFAULT NULL,
+    `apellido_autorizado2` VARCHAR(45) DEFAULT NULL,
+    `parentesco_autorizado2` VARCHAR(45) DEFAULT NULL,
+    `telf_autorizado` VARCHAR(45) NOT NULL,
+    `direc_autorizado` VARCHAR(45) NOT NULL,
+    `email_autorizado` VARCHAR(45) NOT NULL,
+    `id_Alumn` INT(11) DEFAULT NULL,  -- Debe ser el mismo tipo de dato (INT(11)) que `idalumno` en `alumnos`
+    `dateCreat` DATE DEFAULT NULL,
+    `dateUpdate` DATE DEFAULT NULL,
+    PRIMARY KEY (`idAutorizado`),
+    FOREIGN KEY (`id_Alumn`) REFERENCES `alumno`(`idalumno`)  -- Asegúrate de que la columna `idalumno` en `alumnos` sea la clave primaria
+);

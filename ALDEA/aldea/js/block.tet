@@ -1,0 +1,412 @@
+<table class="table table-bordered">
+ <caption>Notas por periodos </caption>
+ <thead>
+ <tr>
+ <td colspan="2" rowspan="2"></td>
+ <th colspan="3">Clothes</th>
+ <th colspan="2">Accessories</th>
+ </tr>
+ <tr>
+ <th>Trousers</th>
+ <th>Skirts</th>
+ <th>Dresses</th>
+ <th>Bracelets</th>
+ <th>Rings</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <th rowspan="3">Belgium</th>
+ <th>Antwerp</th>
+ <td>56</td>
+ <td>22</td>
+ <td>43</td>
+ <td>72</td>
+ <td>23</td>
+ </tr>
+ <tr>
+ <th>Gent</th>
+ <td>46</td>
+ <td>18</td>
+ <td>50</td>
+ <td>61</td>
+ <td>15</td>
+ </tr>
+ <tr>
+ <th>Brussels</th>
+ <td>51</td>
+ <td>27</td>
+ <td>38</td>
+ <td>69</td>
+ <td>28</td>
+ </tr>
+ <tr>
+ <th rowspan="2">The Netherlands</th>
+ <th>Amsterdam</th>
+ <td>89</td>
+ <td>34</td>
+ <td>69</td>
+ <td>85</td>
+ <td>38</td>
+ </tr>
+ <tr>
+ <th>Utrecht</th>
+ <td>80</td>
+ <td>12</td>
+ <td>43</td>
+ <td>36</td>
+ <td>19</td>
+ </tr>
+ </tbody>
+ </table>
+
+
+
+
+ <table class="table table-bordered">
+    <caption>Notas por periodos</caption>
+    <thead>
+        <tr>
+            <th colspan="1" rowspan="3">ALUMN. APELLI SECCION A Y GRADO 3</th>
+            <th colspan="5">COMUNICACIÓN INTEGRAL(I) I</th>
+            <th colspan="5">PERSONAL SOCIAL(I)</th>
+        </tr>
+        <tr>
+            <th colspan="5"></th>
+            <th colspan="5"></th>
+        </tr>
+        <tr>
+            <th>1°_PERIODO SEMESTRAL</th>
+            <th>2°_PERIODO SEMESTRAL</th>
+            <th>3°_PERIODO SEMESTRAL</th>
+            <th>4°_PERIODO SEMESTRAL</th>
+            <th>PROMEDIO</th>
+            <th>1°_PERIODO SEMESTRAL</th>
+            <th>2°_PERIODO SEMESTRAL</th>
+            <th>3°_PERIODO SEMESTRAL</th>
+            <th>4°_PERIODO SEMESTRAL</th>
+            <th>PROMEDIO</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>BARRETO HERNÁNDEZ DAVID JOSE</th>
+            <td>56</td>
+            <td>22</td>
+            <td>43</td>
+            <td>72</td>
+            <td>PROMEDIO</td>
+            <td>15</td>
+            <td>50</td>
+            <td>61</td>
+            <td>15</td>
+            <td>PROMEDIO</td>
+        </tr>
+        <tr>
+            <th>MIRANDA ROSTAING MARITZA ADAL</th>
+            <td>89</td>
+            <td>34</td>
+            <td>69</td>
+            <td>85</td>
+            <td>PROMEDIO</td>
+            <td>38</td>
+            <td>69</td>
+            <td>85</td>
+            <td>38</td>
+            <td>PROMEDIO</td>
+        </tr>
+        <tr>
+            <th>REBAZA CUIRO CARLOS JAIR</th>
+            <td>89</td>
+            <td>34</td>
+            <td>69</td>
+            <td>85</td>
+            <td>PROMEDIO</td>
+            <td>38</td>
+            <td>69</td>
+            <td>85</td>
+            <td>38</td>
+            <td>PROMEDIO</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+ 
+<?php
+// Suponiendo que $tiposevaluacion y $alumnos contienen los datos devueltos por las funciones respectivas
+
+// Organizar los datos de los alumnos por períodos y asignaturas
+$datos_alumnos = array();
+
+foreach ($alumnos as $alumno) {
+    $alumno_id = $alumno['alumno_id'];
+    $nombre_completo = $alumno['apellidos'] . ' ' . $alumno['alumnonombre'];
+    $curso = $alumno['nonbrecurso'];
+    $periodo = $alumno['ordentio'];
+    $nota = $alumno['notaacum'];
+
+    // Crear una entrada para el alumno si no existe
+    if (!isset($datos_alumnos[$alumno_id])) {
+        $datos_alumnos[$alumno_id] = array(
+            'nombre' => $nombre_completo,
+            'cursos' => array()
+        );
+    }
+
+    // Crear una entrada para el curso si no existe
+    if (!isset($datos_alumnos[$alumno_id]['cursos'][$curso])) {
+        $datos_alumnos[$alumno_id]['cursos'][$curso] = array_fill(1, 4, ''); // Inicializar con 4 períodos vacíos
+    }
+
+    // Asignar la nota al período correspondiente
+    $datos_alumnos[$alumno_id]['cursos'][$curso][$periodo] = $nota;
+}
+
+// Obtener los nombres únicos de los cursos
+$cursos = array_unique(array_column($alumnos, 'nonbrecurso'));
+
+// Construir la tabla en HTML
+echo '<table class="table table-bordered">';
+echo '<caption>Notas por periodos</caption>';
+echo '<thead>';
+echo '<tr>';
+echo '<th rowspan="3">ALUMN. APELLI SECCION A Y GRADO 3</th>';
+
+// Encabezados de los cursos
+foreach ($cursos as $curso) {
+    echo '<th colspan="5">' . $curso . '</th>';
+}
+echo '</tr>';
+echo '<tr>';
+foreach ($cursos as $curso) {
+    echo '<th colspan="5"></th>';
+}
+echo '</tr>';
+echo '<tr>';
+foreach ($cursos as $curso) {
+    for ($i = 1; $i <= 4; $i++) {
+        echo '<th>' . $i . '°_PERIODO SEMESTRAL</th>';
+    }
+    echo '<th>PROMEDIO</th>';
+}
+echo '</tr>';
+echo '</thead>';
+echo '<tbody>';
+
+// Filas de datos de los alumnos
+foreach ($datos_alumnos as $alumno) {
+    echo '<tr>';
+    echo '<th>' . $alumno['nombre'] . '</th>';
+    
+    // Datos de cada curso
+    foreach ($alumno['cursos'] as $curso) {
+        foreach ($curso as $nota) {
+            echo '<td>' . $nota . '</td>';
+        }
+        
+        // Calcular el promedio
+        $promedio = array_sum($curso) / count($curso);
+        echo '<td>' . $promedio . '</td>';
+    }
+    
+    echo '</tr>';
+}
+
+echo '</tbody>';
+echo '</table>';
+?>
+
+
+<?php
+// Suponiendo que $tiposevaluacion y $alumnos contienen los datos devueltos por las funciones respectivas
+
+// Organizar los datos de los alumnos por períodos y asignaturas
+$datos_alumnos = array();
+
+foreach ($alumnos as $alumno) {
+    $alumno_id = $alumno['alumno_id'];
+    $nombre_completo = $alumno['apellidos'] . ' ' . $alumno['alumnonombre'];
+    $curso = $alumno['nonbrecurso'];
+    $periodo = $alumno['ordentio'];
+    $nota = $alumno['notaacum'];
+
+    // Crear una entrada para el alumno si no existe
+    if (!isset($datos_alumnos[$alumno_id])) {
+        $datos_alumnos[$alumno_id] = array(
+            'nombre' => $nombre_completo,
+            'cursos' => array()
+        );
+    }
+
+    // Crear una entrada para el curso si no existe
+    if (!isset($datos_alumnos[$alumno_id]['cursos'][$curso])) {
+        $datos_alumnos[$alumno_id]['cursos'][$curso] = array_fill(1, 4, ''); // Inicializar con 4 períodos vacíos
+    }
+
+    // Asignar la nota al período correspondiente
+    $datos_alumnos[$alumno_id]['cursos'][$curso][$periodo] = $nota;
+}
+
+// Obtener los nombres únicos de los cursos
+$cursos = array_unique(array_column($alumnos, 'nonbrecurso'));
+
+// Construir la tabla en HTML
+echo '<table class="table table-bordered">';
+echo '<caption>Notas por periodos</caption>';
+echo '<thead>';
+echo '<tr>';
+echo '<th rowspan="3">ALUMN. APELLI SECCION A Y GRADO 3</th>';
+
+// Encabezados de los cursos
+foreach ($cursos as $curso) {
+    echo '<th colspan="5">' . $curso . '</th>';
+}
+echo '</tr>';
+echo '<tr>';
+foreach ($cursos as $curso) {
+    for ($i = 1; $i <= 4; $i++) {
+        echo '<th>' . $i . '°_PERIODO SEMESTRAL</th>';
+    }
+    echo '<th>PROMEDIO</th>';
+}
+echo '</tr>';
+echo '</thead>';
+echo '<tbody>';
+
+// Filas de datos de los alumnos
+foreach ($datos_alumnos as $alumno) {
+    echo '<tr>';
+    echo '<th>' . $alumno['nombre'] . '</th>';
+    
+    // Datos de cada curso
+    foreach ($alumno['cursos'] as $curso) {
+        foreach ($curso as $nota) {
+            echo '<td>' . $nota . '</td>';
+        }
+        
+        // Calcular el promedio
+        $promedio = array_sum($curso) / count($curso);
+        echo '<td>' . $promedio . '</td>';
+    }
+    
+    echo '</tr>';
+}
+
+echo '</tbody>';
+echo '</table>';
+?>
+
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+<?php
+// Verificar si se han recibido datos de tabla HTML del cliente
+if(isset($_GET['idgrado']) && isset($_GET['idsecion']) && isset($_GET['idyear']) && isset($_GET['idnivel'])) {
+    // Recibir los datos de los parámetros
+    $idgrado = htmlspecialchars($_GET['idgrado'], ENT_QUOTES, 'UTF-8');
+    $idsecion = htmlspecialchars($_GET['idsecion'], ENT_QUOTES, 'UTF-8');
+    $idyear = htmlspecialchars($_GET['idyear'], ENT_QUOTES, 'UTF-8');
+    $idnivel = htmlspecialchars($_GET['idnivel'], ENT_QUOTES, 'UTF-8');
+    $nombreNivel = htmlspecialchars($_GET['nombreNivel'],ENT_QUOTES,'UTF-8');
+
+    include_once '../../modelo/modelo_notas.php';
+    $MU  = new  Nota();
+
+    $tiposevaluacion = $MU->Listar_Notas_Periodo($idyear);
+    $alumnos = $MU->Listar_Alumnos_Ponderados($idgrado,$idnivel,$idyear,$idsecion);
+
+    $notas_por_alumno = [];
+    // Agrupar las notas acumuladas por alumno
+    if (isset($alumnos) && is_array($alumnos)) {
+        foreach ($alumnos as $alumno) {
+            $alumno_id = $alumno['alumno_id'];
+            if (!isset($notas_por_alumno[$alumno_id])) {
+                $notas_por_alumno[$alumno_id] = [];
+            }
+            $notas_por_alumno[$alumno_id][] = $alumno;
+        }
+    }
+
+    //reportes para notas
+    $datos_alumnos = array();
+    foreach ($alumnos as $alumno) {
+        $alumno_id = $alumno['alumno_id'];
+        $nombre_completo = $alumno['apellidos'] . ' ' . $alumno['alumnonombre'];
+        $curso = $alumno['nonbrecurso'];
+        $periodo = $alumno['ordentio'];
+        $nota = $alumno['notaacum'];
+
+        // Crear una entrada para el alumno si no existe
+        if (!isset($datos_alumnos[$alumno_id])) {
+            $datos_alumnos[$alumno_id] = array(
+                'nombre' => $nombre_completo,
+                'cursos' => array()
+            );
+        }
+
+        // Crear una entrada para el curso si no existe
+        if (!isset($datos_alumnos[$alumno_id]['cursos'][$curso])) {
+            $datos_alumnos[$alumno_id]['cursos'][$curso] = array_fill(1, count($tiposevaluacion), ''); // Inicializar con períodos vacíos
+        }
+
+        // Asignar la nota al período correspondiente
+        $datos_alumnos[$alumno_id]['cursos'][$curso][$periodo] = $nota;
+    }
+
+    // Obtener los nombres únicos de los cursos
+    $cursos_unicos = array_unique(array_column($alumnos, 'nonbrecurso'));
+
+    // Cabeceras para indicar que se va a descargar un archivo Excel
+    header("Content-Type: application/xls");
+    header("Content-Disposition: attachment; filename=documento_exportado_" . date('Y-m-d_H-i-s') . ".xls");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+
+    // Comenzar la tabla HTML
+    echo '<table>';
+
+    // Cabecera de la tabla
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th rowspan="2">ALUMN. APELLI SECCION A Y GRADO 3</th>';
+    foreach ($cursos_unicos as $curso) {
+        $num_columnas = count($tiposevaluacion) + 1;
+        echo '<th colspan="' . $num_columnas . '">' . $curso . '</th>';
+    }
+    echo '</tr>';
+    echo '<tr>';
+    foreach ($cursos_unicos as $curso) {
+        for ($i = 1; $i <= count($tiposevaluacion); $i++) {
+            echo '<th>' . $i . '°_' . $tiposevaluacion[$i - 1]['tipo_nombre'] . '</th>';
+        }
+        echo '<th>PROMEDIO</th>';
+    }
+    echo '</tr>';
+    echo '</thead>';
+
+    // Cuerpo de la tabla
+    echo '<tbody>';
+    foreach ($datos_alumnos as $alumno) {
+        echo '<tr>';
+        echo '<th>' . $alumno['nombre'] . '</th>';
+        foreach ($cursos_unicos as $curso) {
+            foreach ($alumno['cursos'][$curso] as $nota) {
+                echo '<td>' . (empty($nota) ? 0 : $nota) . '</td>';
+            }
+            $promedio_curso = array_sum($alumno['cursos'][$curso]) / count($tiposevaluacion);
+            echo '<td><label style="' . ($promedio_curso > 10.5 ? 'color: blue;' : 'color: red;') . '">' . round($promedio_curso) . '</label></td>';
+        }
+        echo '</tr>';
+    }
+    echo '</tbody>';
+
+    // Fin de la tabla HTML
+    echo '</table>';
+
+} else {
+    // Si no se han recibido los parámetros necesarios, mostrar un mensaje de error
+    echo "Error: No se han recibido todos los parámetros necesarios.";
+}
+?>

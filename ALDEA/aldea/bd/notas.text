@@ -1,0 +1,23 @@
+
+1. Crear base de datos "demo_school"
+2. Ejecutar la escritp  "BD_Actualizado.sql" de la base de datos
+
+2.1. total 45 tabals 
+(SELECT COUNT(*) AS table_count FROM information_schema.tables WHERE table_schema = 'demo_school';)
+
+3. Copia el el proyecto a suevidor (xamp->htdocs/aqui ,laragon->www/aqui)
+4. Poner los nombres de los siguientes directorios en minuscula
+   Plantilla -->plantilla
+   Login --->Login
+   Modelo-->Modelo
+   Model --->model
+5. ingras al navegador "localhost/nombredelproyecto"
+
+6. Credenciales:usuario: daniel passsword: admin   (Admin)
+
+Herrores comunes
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci' at line 23
+Solucion:
+
+ejecuatr 1. ALTER DATABASE borrar CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+         2. importar el script

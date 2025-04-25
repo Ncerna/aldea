@@ -1,0 +1,37 @@
+ALTER TABLE docentes
+ADD COLUMN fecha_ingreso DATE,
+ADD COLUMN nacionalidad VARCHAR(50),
+ADD COLUMN antiguedad VARCHAR(50),
+ADD COLUMN antiguedad_docencia VARCHAR(50),
+ADD COLUMN renuncia VARCHAR(10),
+ADD COLUMN tipo_contrato VARCHAR(50),
+ADD COLUMN observaciones TEXT;
+
+
+
+/// MAS ADELANTE AGREGAMOS ESTOS CAMPOS PARA AGREGAR LOS ARCHIVOS A LA BASE DE DATOS COMO CEDULA Y PDF
+
+ALTER TABLE docente 
+ADD COLUMN foto VARCHAR(255),
+ADD COLUMN cv VARCHAR(255),
+ADD COLUMN titulo VARCHAR(255),
+ADD COLUMN constancia VARCHAR(255),
+ADD COLUMN capacitaciones VARCHAR(255);
+
+
+
+
+//agregamos estos campos 
+ALTER TABLE docentes 
+ADD COLUMN matricula VARCHAR(50) AFTER estado_baja,
+ADD COLUMN cargo_mec VARCHAR(100) AFTER matricula,
+ADD COLUMN cargo_int VARCHAR(100) AFTER cargo_mec,
+ADD COLUMN clase_cargo VARCHAR(100) AFTER cargo_int,
+ADD COLUMN turno VARCHAR(50) AFTER clase_cargo,
+ADD COLUMN nivel_mec VARCHAR(100) AFTER turno,
+ADD COLUMN titulos_obtenidos TEXT AFTER nivel_mec,
+ADD COLUMN identificacion_aldea VARCHAR(100) AFTER titulos_obtenidos,
+ADD COLUMN estado_civil VARCHAR(50) AFTER identificacion_aldea,
+ADD COLUMN lugar_nacimiento VARCHAR(100) AFTER estado_civil,
+ADD COLUMN cargo_aldea VARCHAR(100) AFTER lugar_nacimiento,
+ADD COLUMN nivel_grado VARCHAR(100) AFTER cargo_aldea;

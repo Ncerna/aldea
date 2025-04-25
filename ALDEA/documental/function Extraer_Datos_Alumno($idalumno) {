@@ -1,0 +1,24 @@
+function Extraer_Datos_Alumno($idalumno){
+    $sql = "SELECT 
+                alumno.idalumno, apellidos, alumnonombre, dni, telefono, codigo, sexo, fnacimiento, direccion,
+                paderNombre, PadreApellidos, padreDni, madreNombres, madreApellidos, madreDni, 
+                cole_procedente, coleUbicacion, coleCodigo, telf_padre, direc_padre, email_padre, 
+                country, age, province, municipality, others, planeStudy, especiality, 
+                nombre_autorizado1, apellido_autorizado1, parentesco_autorizado1, 
+                nombre_autorizado2, apellido_autorizado2, parentesco_autorizado2 
+            FROM alumno  
+            LEFT JOIN apoderados ON apoderados.id_Alumn = alumno.idalumno
+            LEFT JOIN autorizados ON autorizados.id_Alumn = alumno.idalumno
+            WHERE alumno.idalumno = '$idalumno'";
+
+    if ($consulta = $this->conexion->conexion->query($sql)) {
+        if ($fila = mysqli_fetch_assoc($consulta)) {
+            $fila['procedente'] = $this->ObtenerProcedentePorAlumno($idalumno);
+            $this->conexion->cerrar();
+            return $fila;
+        }
+    }
+
+    $this->conexion->cerrar();
+    return null;
+}
