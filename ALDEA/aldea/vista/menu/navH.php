@@ -39,7 +39,22 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu " data-widget="tree" style=" ">
        <!-- <li class="header">MAIN NAVIGATION</li>-->
+
+       <li class="treeview">
+          <a>
+            <i class="fa fa-bell-o"></i> <span style="cursor: pointer;">Publicación</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+            </span>
+
+            <ul class="treeview-menu">
+                   <li><a onclick="cargar_contenido('contenido_principal','events/events_lists.php')" style="cursor: pointer;"><i class="fa fa-circle-o"></i> Eventos</a></li>
+              </ul>
+          </a>
+        </li>
        <?php 
+
+       
 
         if ($_SESSION['S_ROL'] =='ADMINISTRADOR') {
           ?>

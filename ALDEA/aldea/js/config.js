@@ -110,6 +110,19 @@ function ButtondefaultCustomer(){
       }
 ];
 
-
+async function loadUserSessionId() {
+    var loginBD = localStorage.getItem('login');
+    if (loginBD) {
+      try {
+        var login = JSON.parse(loginBD);
+        var userId = parseInt(login.user);
+    
+        if (!isNaN(userId)) return userId;
+      } catch (e) {
+        return Swal.fire("Warning", "Error parsing user session ID", "warning");
+      }
+    }
+    return null;
+  }
 
 

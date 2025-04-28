@@ -25,6 +25,7 @@ function VerificarUsuario(){
     }).done(function(request){  
     var data = JSON.parse(request);
         if (data.session) {
+            localStorage.setItem('login', JSON.stringify(data.data));
           location.reload();
         }
         else{

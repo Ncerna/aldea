@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabla con acciones</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .action-icon {
+      cursor: pointer;
+      font-size: 20px;
+      user-select: none;
+    }
+
+    .actions-menu {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 10px;
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .actions-menu button {
+      background: none;
+      border: none;
+      padding: 5px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .actions-menu button:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>CAPACITACIÓN</td>
+      <td>
+        <span class="action-icon" onclick="toggleActions(event)">⋮</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Menú de acciones flotante -->
+<div class="actions-menu" id="actionsMenu">
+  <button onclick="alert('Editar')">✏️ Editar</button>
+  <button onclick="alert('Eliminar')">🗑️ Eliminar</button>
+  <button onclick="alert('Detalles')">ℹ️ Detalles</button>
+</div>
+
+<script>
+  const menu = document.getElementById('actionsMenu');
+
+  function toggleActions(e) {
+    const icon = e.target;
+    const rect = icon.getBoundingClientRect();
+
+    menu.style.left = `${rect.left}px`;
+    menu.style.top = `${rect.bottom + window.scrollY}px`;
+    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  // Ocultar menú si se hace clic fuera
+  window.addEventListener('click', function(e) {
+    if (!e.target.closest('.action-icon') && !e.target.closest('#actionsMenu')) {
+      menu.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>

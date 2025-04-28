@@ -37,6 +37,7 @@ if(!isset($_SESSION['S_IDUSUARIO'])){
     <!--booton imprimir-->
     <link rel="stylesheet" href="../plantilla/plugins/select2/select2.min.css">
     <!-- Google Font -->
+    <script src="../plantilla/dist/js/moment.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
   </head>
 
@@ -44,6 +45,11 @@ if(!isset($_SESSION['S_IDUSUARIO'])){
   <style>
     .swal2-popup{
       font-size:1.0.5em !important;
+    }
+
+    .swal2-toast.swal2-popup {
+      font-size: 1.5em !important;
+     
     }
 
      body {
@@ -190,10 +196,12 @@ if(!isset($_SESSION['S_IDUSUARIO'])){
 <script src="../login/dist/cryptojs-aes-format.js"></script>
 <script src="../login/dist/cryptojs-aes.min.js"></script>
 <script src="../js/config.js"></script>
+<script src="../js/pagination.js"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
    listar_combo_AnioActiveWiev();
+   welcomen();
 
  } );
   function search_SidebarMain() {
@@ -258,6 +266,20 @@ if(!isset($_SESSION['S_IDUSUARIO'])){
       }  
 
     })
+  }
+
+  async function welcomen(){
+    var storedData = localStorage.getItem('login');
+    if (storedData) {
+        var userData = JSON.parse(storedData);
+        Swal.fire({
+            toast: true,
+            position: 'top-right',  icon: 'success',  title: `BIENVENIDO, ${userData.userName}`,
+            text: `Rol: ${userData.rol_nombre}`,  showConfirmButton: false, timer: 3000,
+        });
+
+       
+    } 
   }
 
 </script>

@@ -28,10 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            require 'controlador_crear_session.php';
 
            $util = new Util();
+           if (!empty($consulta) && isset($consulta[0])) {
+            $data = [
+                'userName' => $consulta[0]["usu_usuario"], 
+                'rol_nombre' => $consulta[0]["rol_nombre"], 
+                'user' => $consulta[0]["usu_id"], 
+                'isNew' => $consulta[0]["isNew"], 
+                'identidad' => $consulta[0]["identidad"], 
+            ];
+          } else {
+            
+              $data = []; 
+          }
+
 
            $consulta= $util->Generara_Seccion_Usuario($consulta);
 
-           $response = array('status' => true,'mensaje' => 'Exito','data'=>$consulta,'session' => true,);
+           $response = array('status' => true,'mensaje' => 'Exito','data'=>$consulta,'session' => true,'data'=> $data);
            echo json_encode($response,JSON_UNESCAPED_UNICODE);
 
          }else{
