@@ -1816,6 +1816,129 @@ ALTER TABLE `stadopenciones`
 --
 ALTER TABLE `usuarios`
   ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`rol_id`) REFERENCES `rol` (`rol_id`) ON UPDATE CASCADE;
+
+CREATE TABLE messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- ID único del mensaje
+    sender_id INT NOT NULL,  -- ID del usuario que envía el mensaje
+    recipient_id INT NULL,  -- ID del usuario destinatario, NULL para mensajes masivos
+    subject VARCHAR(255) NOT NULL,  -- Asunto del mensaje
+    content TEXT NOT NULL,  -- Contenido del mensaje
+    is_approved TINYINT DEFAULT 0,  -- Estado del mensaje (0=pendiente, 1=aprobado, 2=rechazado, 3=oculto)
+    status TINYINT DEFAULT 1,  -- Tipo de envío (1=activo, 0=borado)
+    send_type TINYINT DEFAULT 1,  -- Tipo de envío (1=individual, 2=masivo)
+    parent_message_id INT NULL,  -- ID del mensaje original al que se responde, NULL si no es respuesta
+    parent_comment_id INT NULL,  -- ID del mensaje al que se responde como comentario, NULL si no es comentario
+    approver_id INT NULL,  -- ID del administrador que aprobó el mensaje (si es necesario)
+    likes_count INT DEFAULT 0,  -- Número total de "likes" que ha recibido el mensaje
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación del mensaje
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    
+    -- Relaciones con la tabla `users`
+    FOREIGN KEY (sender_id) REFERENCES usuarios(usu_id),
+    FOREIGN KEY (recipient_id) REFERENCES usuarios(usu_id),
+    FOREIGN KEY (approver_id) REFERENCES usuarios(usu_id),
+    FOREIGN KEY (parent_message_id) REFERENCES messages(id),  -- Relación con el mensaje original
+    FOREIGN KEY (parent_comment_id) REFERENCES messages(id)  -- Relación con el comentario
+);
+
+
+
+CREATE TABLE message_recipients (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- ID único del destinatario del mensaje
+    message_id INT NOT NULL,  -- Referencia al mensaje en la tabla `messages`
+    user_id INT NOT NULL,  -- ID del usuario destinatario
+    status TINYINT DEFAULT 1,  -- Estado del mensaje para el destinatario (0=eliminado, 1=activo)
+    is_read TINYINT DEFAULT 0,  -- Si el destinatario ha leído el mensaje (0=no leído, 1=leído)
+    is_favorite TINYINT DEFAULT 0,  -- Si el destinatario ha marcado el mensaje como favorito (0=no, 1=sí)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación del registro
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    
+    -- Relaciones con las tablas `messages` y `users`
+    FOREIGN KEY (message_id) REFERENCES messages(id),
+    FOREIGN KEY (user_id) REFERENCES usuarios(usu_id)
+   
+);
+
+CREATE TABLE events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    start_date DATETIME NOT NULL,
+    end_date DATETIME NOT NULL,
+    location VARCHAR(512) DEFAULT NULL,
+    is_virtual BOOLEAN DEFAULT FALSE,
+    virtual_link VARCHAR(512) DEFAULT NULL,
+    organizer_id INT DEFAULT NULL, -- Creator user ID
+    is_approved TINYINT DEFAULT 0, -- 0 = pending, 1 = approved
+    approver_id INT DEFAULT NULL,  -- Admin who approved
+    status TINYINT DEFAULT 1,      -- 1 = active, 0 = deleted
+    background_color VARCHAR(20) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (organizer_id) REFERENCES usuarios(usu_id)
+);
+CREATE TABLE event_recipients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_id INT NOT NULL,
+    recipient_type ENUM('individual', 'grade', 'role', 'public') NOT NULL,
+    recipient_id INT NULL, -- NULL para 'public'
+    status TINYINT DEFAULT 1,  -- 1=Activo, 0=Eliminado
+    is_read TINYINT DEFAULT 0, -- 0=No leído, 1=Leído
+    is_favorite TINYINT DEFAULT 0, -- 0=No favorito, 1=Favorito
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (event_id) REFERENCES events(id),
+    INDEX idx_recipient (recipient_type, recipient_id)
+);
+
+
+
+CREATE TABLE attachments (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- ID único del archivo adjunto
+    message_id INT DEFAULT NULL,  -- Referencia al mensaje en la tabla `messages`
+    event_id INT DEFAULT NULL,   
+    file_name VARCHAR(255) NOT NULL,  -- Nombre del archivo adjunto
+    file_type TEXT NOT NULL,  -- tipo de archivo
+    file_path VARCHAR(512) NOT NULL,  -- Ruta donde se guarda el archivo en el servidor
+    isFavorite TINYINT DEFAULT 0,
+    status TINYINT DEFAULT 1,  -- Estado del archivo (0=eliminado, 1=activo)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación del adjunto
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    
+    -- Relación con la tabla `messages`
+    FOREIGN KEY (message_id) REFERENCES messages(id),
+     FOREIGN KEY (event_id) REFERENCES events(id)
+);
+CREATE TABLE message_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- ID único del detalle del mensaje
+    message_id INT NOT NULL,  -- Referencia al mensaje en la tabla `messages`
+    recipient_id INT NOT NULL,  -- ID del destinatario
+    is_read TINYINT DEFAULT 0,  -- Estado del mensaje para el destinatario (0=pendiente, 1=leído, 2=eliminado)
+    status TINYINT DEFAULT 0,
+    read_at TIMESTAMP NULL,  -- Fecha y hora en que el destinatario leyó el mensaje
+    deleted TINYINT DEFAULT 0,  -- Si el destinatario eliminó el mensaje (0=no, 1=sí)
+    is_favorite TINYINT DEFAULT 0,  -- Si el destinatario ha marcado el mensaje como favorito (0=no, 1=sí)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Fecha de creación del registro
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de última actualización
+    
+    -- Relaciones con las tablas `messages` y `users`
+    FOREIGN KEY (message_id) REFERENCES messages(id),
+    FOREIGN KEY (recipient_id) REFERENCES usuarios(usu_id)
+);
+CREATE TABLE user_favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,                -- Identificador único (opcional)
+    event_id INT NOT NULL,                             -- ID del evento
+    user_id INT NOT NULL,                              -- ID del usuario
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    -- Fecha de creación
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- Fecha de actualización
+    
+    -- Restricción para evitar duplicados
+    UNIQUE KEY unique_favorite (event_id, user_id)     -- Asegura que cada usuario tenga un solo favorito por evento
+);
+
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
