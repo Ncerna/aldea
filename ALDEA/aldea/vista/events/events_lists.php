@@ -160,6 +160,7 @@
                           </div>
                         </div>
 
+                        
                         <!-- Overlay and Modal to show the large image -->
                         <div id="overlay"></div>
                         <div id="largeImage">
