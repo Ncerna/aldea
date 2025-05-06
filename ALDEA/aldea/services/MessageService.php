@@ -6,22 +6,26 @@ require_once __DIR__ . '/../services/MessageRecipientService.php';
 require_once __DIR__ . '/../repositories/MessageRepository.php';
 require_once __DIR__ . '/../domain/Attachment.php';
 
-class MessageService {
+class MessageService
+{
     private MessageRepository $messageRepository;
     private AttachmentService $attachmentService;
     private MessageRecipientService $recipientService;
 
-    public function __construct(MessageRepository $messageRepository, AttachmentService $attachmentService, MessageRecipientService $recipientService) {
+    public function __construct(MessageRepository $messageRepository, AttachmentService $attachmentService, MessageRecipientService $recipientService)
+    {
         $this->messageRepository = $messageRepository;
         $this->attachmentService = $attachmentService;
         $this->recipientService = $recipientService;
     }
 
-    private function isMultipleMessage(Message $message): bool {
+    private function isMultipleMessage(Message $message): bool
+    {
         return $message->getSendType() == 2;
     }
 
-    public function save(Message $message, $files, $recipients,  $attachmentsRemove): array {
+    public function save(Message $message, $files, $recipients,  $attachmentsRemove): array
+    {
         try {
             if ($this->isMultipleMessage($message)) {
                 $message->setRecipientId(null);
@@ -39,7 +43,7 @@ class MessageService {
             }
 
             if (!empty($attachmentsRemove)) {
-               // $this->attachmentService->deleteAttachments($attachmentsRemove , $message->getId());
+                // $this->attachmentService->deleteAttachments($attachmentsRemove , $message->getId());
             }
 
             return ApiResponse::successResult(1, 'Mensaje guardado correctamente');
@@ -48,7 +52,8 @@ class MessageService {
         }
     }
 
-    public function findById($messageId): array {
+    public function findById($messageId): array
+    {
         try {
             $message = $this->messageRepository->findById($messageId);
             $recipients = $this->recipientService->getRecipientsByMessageId($messageId);
@@ -61,7 +66,8 @@ class MessageService {
         }
     }
 
-    public function list(int $page = 1, int $size = 10): array {
+    public function list(int $page = 1, int $size = 10): array
+    {
         try {
             $result = $this->messageRepository->list(Message::class, $page, $size);
             return ApiResponse::successResult(count($result), $result);
@@ -70,8 +76,9 @@ class MessageService {
         }
     }
 
-    public function getMessagesWithSenderAndRecipient($messageId): array {
-      
+    public function getMessagesWithSenderAndRecipient($messageId): array
+    {
+
         try {
             $message = $this->messageRepository->findByIdAndRemite($messageId);
             $recipients = $this->recipientService->getRecipientsWithFullNames($messageId);
@@ -84,7 +91,8 @@ class MessageService {
         }
     }
 
-    public function listMessages(int $page = 1, int $size = 10): array {
+    public function listMessages(int $page = 1, int $size = 10): array
+    {
         try {
             $result = $this->messageRepository->paginateWithSender($page, $size);
             return ApiResponse::successResult(count($result['list']), $result);
@@ -92,7 +100,8 @@ class MessageService {
             throw new Exception("Error al listar mensajes: " . $e->getMessage());
         }
     }
-    public function deleteMessagesByIds(array $ids): array {
+    public function deleteMessagesByIds(array $ids): array
+    {
         try {
             $this->messageRepository->startTransaction();
             $this->messageRepository->deleteMessageRecipientsByMessageIds($ids);
@@ -105,39 +114,45 @@ class MessageService {
             throw new Exception("Error al eliminar mensajes: " . $e->getMessage());
         }
     }
-    public function markMessageAsFavorite(int $messageId): array {
-        return $this->messageRepository->markMessageAsFavorite($messageId);
+    public function markMessageAsFavorite(int $messageId,int $userId): array
+    {
+        return $this->messageRepository->markMessageAsFavorite($messageId,$userId);
+    }
+    public function markAsRead(int $messageId,int $userId): array
+    {
+        return $this->recipientService->markAsRead($messageId,$userId);
     }
 
-    public function getMessagesForRecipient(int $recipientId): array {
+    public function getMessagesForRecipient(int $recipientId): array
+    {
         return $this->messageRepository->getMessagesForRecipient($recipientId);
     }
 
-    public function handleMessageApproval(int $messageId, int $is_approved): array {
+    public function handleMessageApproval(int $messageId, int $is_approved): array
+    {
         try {
-            return $this->messageRepository->setApprovalStatus($messageId,$is_approved);
+            return $this->messageRepository->setApprovalStatus($messageId, $is_approved);
         } catch (Exception $e) {
             throw new Exception("Error al aprobar el mensaje: " . $e->getMessage());
         }
     }
-    public function getReceivedMessagesPaginated(int $userId, int $page = 1, int $size = 10): array {
-    try {
-       $result= $this->messageRepository->paginateReceivedMessages($userId, $page, $size);
-         return ApiResponse::successResult(count($result['list']), $result);
-    } catch (Exception $e) {
-        throw new Exception("Error al obtener mensajes recibidos paginados: " . $e->getMessage());
+    public function getReceivedMessages(int $userId, $userIsAdmin = false,int $page = 1, int $size = 10): array
+    {
+        try {
+            $result = $this->messageRepository->paginateReceivedMessages($userId,$userIsAdmin, $page, $size);
+            return ApiResponse::successResult(count($result['list']), $result);
+        } catch (Exception $e) {
+            throw new Exception("Error al obtener mensajes recibidos paginados: " . $e->getMessage());
+        }
+    }
+
+    public function getSentMessages(int $userId, int $page = 1, int $size = 10): array
+    {
+        try {
+            $result = $this->messageRepository->paginateSentMessages($userId, $page, $size);
+            return ApiResponse::successResult(count($result['list']), $result);
+        } catch (Exception $e) {
+            throw new Exception("Error al obtener mensajes enviados paginados: " . $e->getMessage());
+        }
     }
 }
-
-public function getSentMessagesPaginated(int $userId, int $page = 1, int $size = 10): array {
-    try {
-        $result= $this->messageRepository->paginateSentMessages($userId, $page, $size);
-         return ApiResponse::successResult(count($result['list']), $result);
-    } catch (Exception $e) {
-        throw new Exception("Error al obtener mensajes enviados paginados: " . $e->getMessage());
-    }
-}
-
-    
-}
-

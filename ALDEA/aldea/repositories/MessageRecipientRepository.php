@@ -90,9 +90,19 @@ class MessageRecipientRepository extends BaseRepository {
         return $recipients;
     }
     public function markAsRead(int $messageId, int $userId): array {
+        if (!$this->userCanMarkMessageAsRead($messageId, $userId)) {
+            return ApiResponse::errorResult(1,"El usuario no tiene permiso para marcar este mensaje como leído.");
+        }
+
         $query = "UPDATE message_recipients SET is_read = 1 WHERE message_id = ? AND user_id = ?";
         $stmt = $this->executeQuery($query, [$messageId, $userId]);
         return ApiResponse::successResult($stmt->affected_rows);
+    }
+    public function userCanMarkMessageAsRead(int $messageId, int $userId): bool {
+        $query = "SELECT 1 FROM message_recipients WHERE message_id = ? AND user_id = ? AND status = 1 LIMIT 1";
+        $stmt = $this->executeQuery($query, [$messageId, $userId]);
+        $result = $stmt->get_result();
+        return ($result->num_rows > 0);
     }
     
 

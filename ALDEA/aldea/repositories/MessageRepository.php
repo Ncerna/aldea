@@ -140,16 +140,64 @@ class MessageRepository extends BaseRepository {
         ];
         }
 
+        public function paginateReceivedMessages(int $userId, bool $userIsAdmin , int $page = 1, int $size = 10): array {
+            $table = $this->getTableName();
+            $offset = ($page - 1) * $size;
+            $startTime = microtime(true);
+            $baseQuery = "FROM $table m JOIN usuarios u_sender ON m.sender_id = u_sender.usu_id
+                           LEFT JOIN usuarios u_recipient ON m.recipient_id = u_recipient.usu_id
+                           JOIN message_recipients mr ON mr.message_id = m.id
+                           WHERE mr.status = 1";
+            $params = [];
+            if (!$userIsAdmin) {
+                $baseQuery .= " AND mr.user_id = ?";
+                $params[] = $userId;
+            }
+            $query = "SELECT m.*, u_sender.usu_nombre AS sender_name,   u_recipient.usu_nombre AS recipient_name,
+                             mr.is_read, mr.is_favorite  $baseQuery   ORDER BY m.created_at DESC
+                      LIMIT ? OFFSET ?";
+        
+            $params[] = $size;
+            $params[] = $offset;
+            $stmt = $this->executeQuery($query, $params);
+            $result = $stmt->get_result();
+            $items = [];
+            while ($row = $result->fetch_assoc()) {
+                $items[] = $row;
+            }
+            // Consulta para total de mensajes
+            $countQuery = "SELECT COUNT(*) as total $baseQuery";
+            $countStmt = $this->executeQuery($countQuery, $userIsAdmin ? [] : [$userId]);
+            $total = $countStmt->get_result()->fetch_assoc()['total'];
+            // Agregar indicador de archivos adjuntos
+            foreach ($items as &$item) {
+                $messageId = $item['id'];
+                $countStmt = $this->executeQuery("SELECT COUNT(*) as total FROM attachments WHERE message_id = ?", [$messageId]);
+                $countResult = $countStmt->get_result();
+                $totalAttachments = $countResult->fetch_assoc()['total'];
+                $item['count_attachments'] = ($totalAttachments > 0) ? 1 : 0;
+            }
+            $endTime = microtime(true);
+            $queryTime = $endTime - $startTime;
+            return [
+                'list' => $items,
+                'page' => $page,
+                'size' => $size,
+                'total' => $total,
+                'total_pages' => ceil($total / $size),
+                'query_time_seconds' => round($queryTime, 3),
+            ];
+        }
+        
+/*
         public function paginateReceivedMessages(int $userId, int $page = 1, int $size = 10): array {
             $table = $this->getTableName();
             $offset = ($page - 1) * $size;
             $startTime = microtime(true);
 
-            $query = "
-                SELECT m.*, 
-                       u_sender.usu_nombre AS sender_name, 
+            $query = " SELECT m.*,   u_sender.usu_nombre AS sender_name, 
                        u_recipient.usu_nombre AS recipient_name,
-                       mr.is_read
+                       mr.is_read,mr.is_favorite 
                 FROM $table m
                 JOIN usuarios u_sender ON m.sender_id = u_sender.usu_id
                 LEFT JOIN usuarios u_recipient ON m.recipient_id = u_recipient.usu_id
@@ -168,9 +216,7 @@ class MessageRepository extends BaseRepository {
             }
 
             // Contar total mensajes recibidos para paginación
-            $countQuery = "
-                SELECT COUNT(*) as total
-                FROM $table m
+            $countQuery = " SELECT COUNT(*) as total FROM $table m
                 JOIN message_recipients mr ON mr.message_id = m.id
                 WHERE mr.user_id = ? AND mr.status = 1
             ";
@@ -198,6 +244,62 @@ class MessageRepository extends BaseRepository {
                 'query_time_seconds' => round($queryTime, 3),
             ];
         }
+
+        public function paginateAllReceivedMessages(int $page = 1, int $size = 10): array {
+            $table = $this->getTableName();
+            $offset = ($page - 1) * $size;
+            $startTime = microtime(true);
+        
+            $query = " SELECT m.*, 
+                              u_sender.usu_nombre AS sender_name, 
+                              u_recipient.usu_nombre AS recipient_name,
+                              mr.is_read, mr.is_favorite 
+                       FROM $table m
+                       JOIN usuarios u_sender ON m.sender_id = u_sender.usu_id
+                       LEFT JOIN usuarios u_recipient ON m.recipient_id = u_recipient.usu_id
+                       JOIN message_recipients mr ON mr.message_id = m.id
+                       WHERE mr.status = 1
+                       ORDER BY m.created_at DESC
+                       LIMIT ? OFFSET ?";
+        
+            $stmt = $this->executeQuery($query, [$size, $offset]);
+            $result = $stmt->get_result();
+        
+            $items = [];
+            while ($row = $result->fetch_assoc()) {
+                $items[] = $row;
+            }
+        
+            // Contar total mensajes para paginación
+            $countQuery = " SELECT COUNT(*) as total FROM $table m
+                            JOIN message_recipients mr ON mr.message_id = m.id
+                            WHERE mr.status = 1";
+        
+            $countStmt = $this->executeQuery($countQuery, []);
+            $total = $countStmt->get_result()->fetch_assoc()['total'];
+        
+            // Agregar indicador de archivos adjuntos
+            foreach ($items as &$item) {
+                $messageId = $item['id'];
+                $countStmt = $this->executeQuery("SELECT COUNT(*) as total FROM attachments WHERE message_id = ?", [$messageId]);
+                $countResult = $countStmt->get_result();
+                $totalAttachments = $countResult->fetch_assoc()['total'];
+                $item['count_attachments'] = ($totalAttachments > 0) ? 1 : 0;
+            }
+        
+            $endTime = microtime(true);
+            $queryTime = $endTime - $startTime;
+        
+            return [
+                'list' => $items,
+                'page' => $page,
+                'size' => $size,
+                'total' => $total,
+                'total_pages' => ceil($total / $size),
+                'query_time_seconds' => round($queryTime, 3),
+            ];
+        }
+        */
 
         public function paginateSentMessages(int $userId, int $page = 1, int $size = 10): array {
             $table = $this->getTableName();
@@ -232,7 +334,7 @@ class MessageRepository extends BaseRepository {
             // Agregar indicador de archivos adjuntos
             foreach ($items as &$item) {
                 $messageId = $item['id'];
-                $countStmt = $this->executeQuery("SELECT COUNT(*) as total FROM attachments WHERE message_id = ?", [$messageId]);
+                $countStmt = $this->executeQuery("SELECT COUNT(*) as total FROM attachments WHERE message_id = ? AND status = 1 ", [$messageId]);
                 $countResult = $countStmt->get_result();
                 $totalAttachments = $countResult->fetch_assoc()['total'];
                 $item['count_attachments'] = ($totalAttachments > 0) ? 1 : 0;
@@ -273,9 +375,11 @@ class MessageRepository extends BaseRepository {
                 throw new Exception("Error eliminando adjuntos: " . $e->getMessage());
             }
         }
-        public function markMessageAsFavorite(int $messageId): array {
+        public function markMessageAsFavorite(int $messageId,int $userId): array {
+             $userId = $this->getCurrentUserId() ?? $userId;
+
             $query = "UPDATE message_recipients SET is_favorite = IF(is_favorite = 1, 0, 1) WHERE message_id = ? AND user_id = ?";
-            $userId = $this->getCurrentUserId(); 
+           
             $stmt = $this->executeQuery($query, [$messageId, $userId]);
             return ApiResponse::successResult($stmt->affected_rows);
         }

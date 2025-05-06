@@ -52,6 +52,21 @@
               </ul>
           </a>
         </li>
+        
+        <li class="treeview">
+          <a>
+            <i class="fa fa-envelope"></i> <span style="cursor: pointer;">Mail box</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+            </span>
+
+            <ul class="treeview-menu">
+                   <li><a onclick="cargar_contenido('contenido_principal','message/mails.php')" style="cursor: pointer;"><i class="fa fa-fw fa-send"></i>Enviar</a></li>
+               
+                  
+              </ul>
+          </a>
+        </li>
        <?php 
 
        

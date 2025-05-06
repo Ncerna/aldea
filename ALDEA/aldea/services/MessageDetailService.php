@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/../utils/ApiResponse.php';
 
-
-
 class MessageDetailService {
     private MessageDetailRepository $repository;
 
