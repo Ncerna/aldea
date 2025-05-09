@@ -160,7 +160,6 @@
                           </div>
                         </div>
 
-                        
                         <!-- Overlay and Modal to show the large image -->
                         <div id="overlay"></div>
                         <div id="largeImage">
@@ -190,6 +189,67 @@
         </div>
     </div>
 </div>
+
+<style>
+  .modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content img {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 4px;
+    cursor: pointer;
+    object-fit: cover;
+  }
+</style>
+
+
+<form autocomplete="false" onsubmit="return false">
+  <div class="modal fade" id="eventDetailsModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content" style=" padding:20px; border-radius:8px; max-width:600px; margin: 50px auto; position: relative;border-radius: 15px;"> <!-- Borde redondeado en el modal -->
+        <div class="modal-header" style="padding: 20px;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="box-title" id="dates_student"></h4>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; scroll-behavior: smooth;">
+          <!-- Content goes here -->
+      
+            <h2 id="modalTitle"></h2>
+            <p id="modalDescription"></p>
+            <p><strong>Fecha inicio:</strong> <span id="modalStartDate"></span></p>
+            <p><strong>Fecha fin:</strong> <span id="modalEndDate"></span></p>
+            <p><strong>Ubicación:</strong> <span id="modalLocation"></span></p>
+            <p><strong>Virtual:</strong> <span id="modalIsVirtual"></span></p>
+            <p><strong>Link virtual:</strong> <a href="#" target="_blank" id="modalVirtualLink"></a></p>
+            <h3>Receptores</h3>
+            <ul id="modalRecipients"></ul>
+            <h3>Imágenes adjuntas</h3>
+            <div id="modalAttachments" style="display:flex; gap:10px; flex-wrap: wrap;"></div>
+        
+      
+
+        </div>
+        <div class="modal-footer">
+            <div style="display: flex;gap: 10px;">
+          <button  class="btn btn-block btn-secondary btn-sm" data-dismiss="modal">
+            <i class="fa fa-times-circle"></i> Cancelar
+          </button>
+         
+        </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+</form>
+
 
 
 <script type="text/javascript">

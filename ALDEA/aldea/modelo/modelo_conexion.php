@@ -8,8 +8,8 @@
 		public function __construct(){
 		    $this->servidor = "localhost";
 			$this->usuario = "root";
-			$this->contrasena = "";
-			$this->basedatos = "aldea";
+			$this->contrasena = "oracle";
+			$this->basedatos = "paraguay";
 		}
 		function conectar(){
 			$this->conexion = new mysqli($this->servidor,$this->usuario,$this->contrasena,$this->basedatos);

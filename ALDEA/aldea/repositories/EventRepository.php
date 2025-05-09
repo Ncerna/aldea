@@ -179,7 +179,98 @@ class EventRepository extends BaseRepository {
     
         
     }
-  
+
+    public function getUserGradeAndRole(int $userId): array {
+        $queryRole = "SELECT usuarios.rol_id,identidad,rol_nombre as role_name FROM usuarios 
+        inner join  rol on rol.rol_id = usuarios.rol_id WHERE usu_id = ? LIMIT 1";
+        $stmtRole = $this->executeQuery($queryRole, [$userId]);
+        $roleRow = $stmtRole->get_result()->fetch_assoc();
+        $roleId = $roleRow['rol_id'] ?? null;
+        $studentId = $roleRow['identidad'] ?? null;
+        $rolerName = $roleRow['role_name'] ?? null;
+
+        $queryGrade = "SELECT id_grado FROM matricula WHERE id_alumno = ? LIMIT 1";
+        $stmtGrade = $this->executeQuery($queryGrade, [$studentId]);
+        $gradeRow = $stmtGrade->get_result()->fetch_assoc();
+        $gradeId = $gradeRow['id_grado'] ?? null;
+        return [ 'gradeId' => $gradeId, 'roleId' => $roleId , 'role_name' => $rolerName,'studentId'=> $studentId ];
+    }
+    
+    public function listEventsByUser(int $userId, int $page = 1, int $size = 10): array {
+        $resultUser = $this->getUserGradeAndRole($userId);
+        $offset = ($page - 1) * $size;
+        list($whereFilter, $params) = $this->buildUserEventsFilter($userId, $resultUser);
+        $query = "
+            SELECT e.*, u.usu_nombre AS organizer_name 
+            FROM " . $this->getTableName() . " e
+            JOIN event_recipients er ON e.id = er.event_id
+            LEFT JOIN usuarios u ON e.organizer_id = u.usu_id
+            WHERE $whereFilter
+            ORDER BY e.start_date DESC
+            LIMIT ? OFFSET ? ";
+        $paramsWithLimit = array_merge($params, [$size, $offset]);
+        $stmt = $this->executeQuery($query, $paramsWithLimit);
+        $result = $stmt->get_result();
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+    
+        $countQuery = "
+            SELECT COUNT(DISTINCT e.id) as total
+            FROM " . $this->getTableName() . " e
+            JOIN event_recipients er ON e.id = er.event_id
+            WHERE $whereFilter
+        ";
+        $countStmt = $this->executeQuery($countQuery, $params);
+        $total = $countStmt->get_result()->fetch_assoc()['total'];
+    
+        return [
+            'list' => $items,
+            'page' => (int)$page,
+            'size' => (int)$size,
+            'total' => (int)$total,
+            'total_pages' => (int)ceil($total / $size),
+        ];
+    }
+    
+    private function buildUserEventsFilter(int $userId, array $result): array {
+        $gradeId = (int)$result['gradeId'];
+        $roleId = (int)$result['roleId'];
+        $roleName = strtoupper($result['role_name']);
+        $isTeacher = ($roleName === 'DOCENTE');
+        $whereParts = [
+            "er.status = 1",
+            "e.status = 1",
+            "e.is_approved = 1"
+        ];
+        $recipientConditions = [];
+    
+        // Individual (usuario)
+        $recipientConditions[] = "(er.recipient_type = 'individual' AND er.recipient_id IN (?))";
+    
+        // Role
+        $recipientConditions[] = "(er.recipient_type = 'role' AND er.recipient_id IN (?))";
+    
+        // Grade solo si NO es docente
+        if (!$isTeacher) {
+            $recipientConditions[] = "(er.recipient_type = 'grade' AND er.recipient_id IN (?))";
+        }
+    
+        // Public siempre
+        $recipientConditions[] = "(er.recipient_type = 'public')";
+        // Unir condiciones OR
+        $whereParts[] = "(" . implode(" OR ", $recipientConditions) . ")";
+        // Construir WHERE completo
+        $where = implode(" AND ", $whereParts);
+        // Preparar parámetros en orden
+        $params = [$userId, $roleId];
+        if (!$isTeacher) {
+            $params[] = $gradeId;
+        }
+        return [$where, $params];
+    }
+    
     
     
     

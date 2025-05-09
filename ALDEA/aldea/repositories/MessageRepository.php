@@ -150,7 +150,7 @@ class MessageRepository extends BaseRepository {
                            WHERE mr.status = 1";
             $params = [];
             if (!$userIsAdmin) {
-                $baseQuery .= " AND mr.user_id = ?";
+                $baseQuery .= " AND mr.user_id = ? AND m.is_approved = 1";
                 $params[] = $userId;
             }
             $query = "SELECT m.*, u_sender.usu_nombre AS sender_name,   u_recipient.usu_nombre AS recipient_name,
