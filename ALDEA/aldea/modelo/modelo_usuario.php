@@ -11,7 +11,7 @@ class Modelo_Usuario{
         
 
      function VerificarUsuario($usuario,$contra){
-      $sql = "select  usu_id,identidad,usu_usuario,usu_nombre,usu_contrasena,rol_nombre,usu_estatus,imagen from usuarios
+      $sql = "select  usu_id,identidad,usu_usuario,usu_nombre,usu_contrasena,rol_nombre,usu_estatus,imagen,isNew from usuarios
              inner join  rol on rol.rol_id = usuarios.rol_id
              where usu_usuario='$usuario' ";
 

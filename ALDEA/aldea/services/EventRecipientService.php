@@ -42,7 +42,16 @@ class EventRecipientService {
             }
         }
     }
-
+  function createEventRecipient($event_id) :EventRecipient {
+    $eventRecipient = new EventRecipient();
+    $eventRecipient->setStatus(1);
+    $eventRecipient->setEventId($event_id);
+    $eventRecipient->setRecipientType('public');
+    $eventRecipient->setRecipientId(null);
+    $eventRecipient->setIsRead(0);  
+    $eventRecipient->setIsFavorite(0); 
+    return $eventRecipient;
+}
 
     public function save(EventRecipient $recipient): array {
         try {
